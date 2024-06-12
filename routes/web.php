@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Backend\BlogController;
 use App\Http\Controllers\Backend\CategoryController;
+use App\Http\Controllers\Backend\ChatController;
 use App\Http\Controllers\Backend\CouponController;
 use App\Http\Controllers\Backend\SettingController;
 use App\Http\Controllers\Frontend\CartController;
@@ -85,6 +86,9 @@ Route::middleware('auth')->group(function () {
         // Question
         Route::post('/user/question', 'UserQuestion')->name('user.question');
     });
+
+    // User Live Chat
+    Route::get('/live/chat', [UserController::class, 'LiveChat'])->name('live.chat');
 });
 
 // admin group middleware
@@ -528,5 +532,10 @@ Route::get('/blog', [BlogController::class, 'BlogList'])->name('blog');
 
 // Blog route
 Route::post('/mark-notification-as-read/{notification}', [CartController::class, 'MarkAsRead']);
+
+// Chat Post Request Route
+Route::post('/send-message', [ChatController::class, 'SendMessage']);
+// Chat Get Request Route
+Route::get('/user-all', [ChatController::class, 'GetAllUsers']);
 
 require __DIR__.'/auth.php';

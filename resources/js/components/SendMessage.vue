@@ -22,7 +22,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">
-                            Chat With Instructor
+                            Chat With {{ receiverid }} {{ receivername }}
                         </h5>
                         <button
                             type="button"
@@ -33,23 +33,64 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form action="">
+                    <form @submit.prevent="sendMessage()">
                         <div class="modal-body">
                             <textarea
                                 class="form-control"
+                                v-model="form.message"
                                 rows="3"
                                 placeholder="Type your message..."
                                 id=""
                             ></textarea>
+                            <span
+                                class="text-success"
+                                v-if="successMessage.message"
+                                >{{ successMessage.message }}</span
+                            >
+                            <span class="text-danger" v-if="errors.message">{{
+                                errors.message[0]
+                            }}</span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">
+                                Send Message
+                            </button>
                         </div>
                     </form>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">
-                            Send Message
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </template>
+
+<script>
+export default {
+    props: ["receiverid", "receivername"],
+
+    data() {
+        return {
+            form: {
+                message: "",
+                receiver_id: this.receiverid,
+            },
+            errors: {},
+            successMessage: {},
+        };
+    },
+
+    methods: {
+        sendMessage() {
+            axios
+                .post("/send-message", this.form)
+                .then((response) => {
+                    this.form.message = "";
+                    this.successMessage = response.data;
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    this.errors = error.response.data.errors;
+                });
+        },
+    },
+};
+</script>

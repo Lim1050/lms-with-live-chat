@@ -212,7 +212,10 @@ LMS - {{ $instructor->name }}
                         </div>
                     </li>
                 @else
-                    <button class="btn theme-btn d-none d-lg-inline-block">For chat with instructor you need to login first!</button>
+                    {{-- <button class="btn theme-btn d-none d-lg-inline-block">For chat with instructor you need to login first!</button> --}}
+                    <a class="nav-link" href="{{ route('login') }}">
+                        For chat with instructor you need to login first!
+                    </a>
                 @endauth
 
                 <li class="nav-item">
