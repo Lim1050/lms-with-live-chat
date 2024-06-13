@@ -42,22 +42,30 @@
                         >
                             <span class="chat-img left clearfix mx-2">
                                 <img
+                                    v-if="message.user.role === 'user'"
+                                    :src="
+                                        '/upload/user_images/' +
+                                        message.user.photo
+                                    "
+                                    alt="UserImage"
+                                    class="userImg"
+                                />
+                                <img
+                                    v-else
                                     :src="
                                         '/upload/instructor_images/' +
                                         message.user.photo
                                     "
+                                    alt="UserImage"
                                     class="userImg"
-                                    alt="userImg"
                                 />
                             </span>
                             <div class="chat-body2 clearfix">
                                 <div class="header clearfix">
-                                    <strong class="primary-font">{{
-                                        message.user.name
-                                    }}</strong>
-                                    <small class="right font-color">
-                                        {{ message.created_at }}
-                                    </small>
+                                    <strong class="primary-font">
+                                        {{ message.user.name }}
+                                    </strong>
+
                                     <!-- //if send with product id  -->
                                     <!-- <div class="text-center">
                                         product name
@@ -70,34 +78,40 @@
                                 </div>
 
                                 <p class="font-color">{{ message.message }}</p>
+                                <small class="right font-color">
+                                    {{ formatDate(message.created_at) }}
+                                </small>
                             </div>
                         </li>
 
                         <!-- my part  -->
-                        <li class="buyer clearfix">
-                            <span
-                                class="chat-img right clearfix mx-2"
-                                v-if="
-                                    allmessages.user.id === message.receiver_id
-                                "
-                            >
+                        <li class="buyer clearfix" v-else>
+                            <span class="chat-img right clearfix mx-2">
                                 <img
+                                    v-if="message.user.role === 'user'"
                                     :src="
                                         '/upload/user_images/' +
                                         message.user.photo
                                     "
+                                    alt="UserImage"
                                     class="userImg"
-                                    alt="userImg"
+                                />
+                                <img
+                                    v-else
+                                    :src="
+                                        '/upload/instructor_images/' +
+                                        message.user.photo
+                                    "
+                                    alt="UserImage"
+                                    class="userImg"
                                 />
                             </span>
                             <div class="chat-body clearfix">
                                 <div class="header clearfix">
-                                    <strong class="primary-font">{{
-                                        message.user.name
-                                    }}</strong>
-                                    <small class="left font-color">{{
-                                        message.created_at
-                                    }}</small>
+                                    <strong class="primary-font">
+                                        {{ message.user.name }}
+                                    </strong>
+
                                     <!-- <strong class="right primary-font">Myusername </strong> //my name   -->
                                     <!-- <div class="text-center">
                                         Product name
@@ -109,6 +123,9 @@
                                     </div> -->
                                 </div>
                                 <p class="font-color">{{ message.message }}</p>
+                                <small class="left font-color">
+                                    {{ formatDate(message.created_at) }}
+                                </small>
                             </div>
                         </li>
 
@@ -154,6 +171,10 @@ export default {
 
     created() {
         this.getAllUser();
+
+        setInterval(() => {
+            this.userMessage(this.selectedUser);
+        }, 1000);
     },
 
     methods: {
@@ -190,6 +211,17 @@ export default {
                 .catch((error) => {
                     this.errors = error.response.data.errors;
                 });
+        },
+
+        formatDate(dateString) {
+            const options = {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+            };
+            return new Date(dateString).toLocaleDateString("en-Us", options);
         },
     },
 };

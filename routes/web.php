@@ -448,6 +448,9 @@ Route::middleware(['auth', 'roles:instructor'])->group(function () {
         // All Review
         Route::get('/instructor/all/review', 'InstructorAllReview')->name('instructor.all.review');
     });
+
+    // Instructor Live Chat Route
+    Route::get('/instructor/live/chat', [ChatController::class, 'InstructorLiveChat'])->name('instructor.live.chat');
 });
 
 // Route Accessable for All
@@ -539,5 +542,7 @@ Route::post('/send-message', [ChatController::class, 'SendMessage']);
 Route::get('/user-all', [ChatController::class, 'GetAllUsers']);
 // Chat User Message Route
 Route::get('/user-message/{id}', [ChatController::class, 'UserMessageById']);
+
+
 
 require __DIR__.'/auth.php';
