@@ -1,80 +1,114 @@
 <template>
-    <div class="row" style="width: 1100px">
+    <div class="row">
         <div class="col-md-2 myUser">
             <ul class="user">
                 <strong>Chat List</strong>
                 <hr />
-                <li>
-                    <a href="">
+                <li v-for="(user, index) in users" :key="index">
+                    <a href="" @click.prevent="userMessage(user.id)">
                         <img
-                            src="/frontend/avatar-1.png"
+                            v-if="user.role === 'user'"
+                            :src="'/upload/user_images/' + user.photo"
                             alt="UserImage"
                             class="userImg"
                         />
-                        <span class="username text-center">{{ users }}</span>
+                        <img
+                            v-else
+                            :src="'/upload/instructor_images/' + user.photo"
+                            alt="UserImage"
+                            class="userImg"
+                        />
+                        <span class="username text-center">{{
+                            user.name
+                        }}</span>
                     </a>
                 </li>
             </ul>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-10" v-if="allmessages.user">
             <div class="card">
                 <div class="card-header text-center myrow">
-                    <strong> Selected Users </strong>
+                    <strong> {{ allmessages.user.name }} </strong>
                 </div>
                 <div class="card-body chat-msg">
-                    <ul class="chat">
-                        <li class="sender clearfix">
+                    <ul
+                        class="chat"
+                        v-for="(message, index) in allmessages.messages"
+                        :key="index"
+                    >
+                        <li
+                            class="sender clearfix"
+                            v-if="allmessages.user.id === message.sender_id"
+                        >
                             <span class="chat-img left clearfix mx-2">
                                 <img
-                                    src="/frontend/avatar-2.png"
+                                    :src="
+                                        '/upload/instructor_images/' +
+                                        message.user.photo
+                                    "
                                     class="userImg"
                                     alt="userImg"
                                 />
                             </span>
                             <div class="chat-body2 clearfix">
                                 <div class="header clearfix">
-                                    <strong class="primary-font"
-                                        >Username1</strong
-                                    >
-                                    <small class="right"> 11:30am </small>
+                                    <strong class="primary-font">{{
+                                        message.user.name
+                                    }}</strong>
+                                    <small class="right font-color">
+                                        {{ message.created_at }}
+                                    </small>
                                     <!-- //if send with product id  -->
-                                    <div class="text-center">
+                                    <!-- <div class="text-center">
                                         product name
                                         <img
                                             src="/frontend/avatar-3.png"
                                             alt="productImg"
                                             width="60px;"
                                         />
-                                    </div>
+                                    </div> -->
                                 </div>
 
-                                <p class="font-color">Hi..</p>
+                                <p class="font-color">{{ message.message }}</p>
                             </div>
                         </li>
 
                         <!-- my part  -->
                         <li class="buyer clearfix">
-                            <span class="chat-img right clearfix mx-2">
+                            <span
+                                class="chat-img right clearfix mx-2"
+                                v-if="
+                                    allmessages.user.id === message.receiver_id
+                                "
+                            >
                                 <img
-                                    src="/frontend/avatar-4.png"
+                                    :src="
+                                        '/upload/user_images/' +
+                                        message.user.photo
+                                    "
                                     class="userImg"
                                     alt="userImg"
                                 />
                             </span>
                             <div class="chat-body clearfix">
                                 <div class="header clearfix">
-                                    <small class="left">12:10pm</small>
+                                    <strong class="primary-font">{{
+                                        message.user.name
+                                    }}</strong>
+                                    <small class="left font-color">{{
+                                        message.created_at
+                                    }}</small>
                                     <!-- <strong class="right primary-font">Myusername </strong> //my name   -->
-                                    <div class="text-center">
+                                    <!-- <div class="text-center">
                                         Product name
                                         <img
                                             src="/frontend/avatar-5.png"
                                             alt="prouductImage"
                                             width="60px;"
                                         />
-                                    </div>
+                                    </div> -->
                                 </div>
-                                <p class="font-color">Hello...</p>
+                                <p class="font-color">{{ message.message }}</p>
                             </div>
                         </li>
 
@@ -88,11 +122,17 @@
                         <input
                             id="btn-input"
                             type="text"
+                            v-model="message"
                             class="form-control input-sm"
                             placeholder="Type your message here..."
                         />
                         <span class="input-group-btn">
-                            <button class="btn btn-primary">Send</button>
+                            <button
+                                class="btn btn-primary"
+                                @click.prevent="sendMessage()"
+                            >
+                                Send
+                            </button>
                         </span>
                     </div>
                 </div>
@@ -106,6 +146,9 @@ export default {
     data() {
         return {
             users: {},
+            allmessages: {},
+            selectedUser: "",
+            message: "",
         };
     },
 
@@ -121,6 +164,32 @@ export default {
                     this.users = response.data;
                 })
                 .catch((error) => {});
+        },
+
+        userMessage(userId) {
+            axios
+                .get("/user-message/" + userId)
+                .then((response) => {
+                    this.allmessages = response.data;
+                    this.selectedUser = userId;
+                })
+                .catch((error) => {});
+        },
+
+        sendMessage() {
+            axios
+                .post("/send-message", {
+                    receiver_id: this.selectedUser,
+                    message: this.message,
+                })
+                .then((response) => {
+                    this.message = "";
+                    this.userMessage(this.selectedUser);
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    this.errors = error.response.data.errors;
+                });
         },
     },
 };
@@ -205,7 +274,7 @@ export default {
     padding: 15px;
 }
 .chat-msg .chat-body strong {
-    color: #0169da;
+    color: #dfe3e7;
 }
 
 .chat-msg .buyer {

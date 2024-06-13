@@ -533,9 +533,11 @@ Route::get('/blog', [BlogController::class, 'BlogList'])->name('blog');
 // Blog route
 Route::post('/mark-notification-as-read/{notification}', [CartController::class, 'MarkAsRead']);
 
-// Chat Post Request Route
+// Chat Post send message Request Route
 Route::post('/send-message', [ChatController::class, 'SendMessage']);
-// Chat Get Request Route
+// Chat Get all user Request Route
 Route::get('/user-all', [ChatController::class, 'GetAllUsers']);
+// Chat User Message Route
+Route::get('/user-message/{id}', [ChatController::class, 'UserMessageById']);
 
 require __DIR__.'/auth.php';
